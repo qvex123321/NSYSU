@@ -1,0 +1,20 @@
+library(geoR)
+ 
+x <- seq(120.2, 120.45, by=0.001)
+y <- seq(22.45, 22.78, by=0.001)
+xv <- rep(x,length(y))
+yv <- rep(y,each=length(x))
+in_mat <- as.matrix(cbind(xv,yv))
+ 
+a <- read.table("filename.csv",header=TRUE,sep=",") 
+ 
+fnames <- names(a)
+for (i in 4:length(a)) {    
+a1 <- cbind(a[2],a[3],a[i])
+a1 <- na.omit(a1)  
+fnames[i] <- substr(fnames[i],2,nchar(fnames[i]))            
+b <- as.geodata(a1)       
+kc <- krige.conv(b,loc=in_mat,krige=krige.control(type.krige = "OK", cov.model="spherical",cov.pars=c(1,1), aniso.pars=c(0,1), nugget=0))
+write.table(cbind(in_mat,kc$predict),file=fnames[i],row.names=FALSE,col.names=FALSE)
+}
+
